@@ -13,12 +13,15 @@ namespace FilesUploadApi.Validation
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            if (value is IFormFile file)
+            if (value is IEnumerable<IFormFile> filesList)
             {
-                var extension = Path.GetExtension(file.FileName);
-                if (!_allowedExtensions.Contains(extension.ToLower()))
+                foreach (var file in filesList)
                 {
-                    return new ValidationResult("Foto type is not supported");
+                    var extension = Path.GetExtension(file.FileName);
+                    if (!_allowedExtensions.Contains(extension.ToLower()))
+                    {
+                        return new ValidationResult("Foto type is not supported");
+                    }
                 }
             }
 

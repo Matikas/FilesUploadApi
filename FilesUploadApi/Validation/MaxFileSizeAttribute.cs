@@ -13,13 +13,15 @@ namespace FilesUploadApi.Validation
 
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            if (value is IFormFile file)
+            if (value is IEnumerable<IFormFile> filesList)
             {
-
-                if (file.Length > _maxFileSize)
+                foreach(var file in filesList)
                 {
-                    return new ValidationResult($"Maximum allowed file size is {_maxFileSize} bytes.");
-                }
+                    if (file.Length > _maxFileSize)
+                    {
+                        return new ValidationResult($"Maximum allowed file size is {_maxFileSize} bytes.");
+                    }
+                }   
             }
 
             return ValidationResult.Success;

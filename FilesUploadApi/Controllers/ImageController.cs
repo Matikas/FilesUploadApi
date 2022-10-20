@@ -19,13 +19,19 @@ namespace FilesUploadApi.Controllers
         [HttpPost("Upload")]
         public async Task<ActionResult> UploadImage([FromForm] ImageUploadRequest request)
         {
-            using var memoryStream = new MemoryStream();
-            request.Image.CopyTo(memoryStream);
-            var imageBytes = memoryStream.ToArray();
+            var savedImagesIds = new List<int>();
 
-            var savedImage = await _imagesService.AddImageAsync(imageBytes, request.Image.FileName, request.Image.ContentType);
+            foreach(var image in request.Images)
+            {
+                using var memoryStream = new MemoryStream();
+                image.CopyTo(memoryStream);
+                var imageBytes = memoryStream.ToArray();
 
-            return Ok(savedImage.Id);
+                var savedImage = await _imagesService.AddImageAsync(imageBytes, image.FileName, image.ContentType);
+                savedImagesIds.Add(savedImage.Id);
+            }
+
+            return Ok(new { ImageIds = savedImagesIds });
         }
 
         [HttpGet("Download")]
